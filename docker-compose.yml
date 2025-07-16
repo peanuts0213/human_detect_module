@@ -1,0 +1,58 @@
+services:
+  # zookeeper:
+  #     image: confluentinc/cp-zookeeper:7.4.0
+  #     container_name: apc_zookeeper
+  #     environment:
+  #       ZOOKEEPER_CLIENT_PORT: 2181
+  #       ZOOKEEPER_TICK_TIME: 2000
+  #     ports:
+  #       - "22181:2181"
+
+  # kafka:
+  #   image: confluentinc/cp-kafka:7.4.0
+  #   container_name: apc_kafka
+  #   depends_on:
+  #     - zookeeper
+  #   ports:
+  #     - "16642:9092"
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: apc_zookeeper:2181
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:16642
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #     KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  app:
+    image: bict/human-detect-module-dev
+    runtime: nvidia
+    shm_size: '10gb'
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app/src
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,video,display
+      - XDG_RUNTIME_DIR=/tmp/runtime-root
+      # Values
+      - KAFKA_BOOTSTRAP_SERVERS=192.168.0.185:32200
+      - HOST_IP=192.168.0.185
+      - PORT=31000
+      - TURN_HOST=192.168.0.185
+      - TURN_PORT=31000
+
+    command: >
+      uvicorn src_app.human_detect_module.main:app --host 0.0.0.0 --port 8000
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+    volumes:
+      - ./src:/app/src_app
+      - ./yolo12n.pt:/app/yolo12n.pt

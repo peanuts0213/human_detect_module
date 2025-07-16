@@ -1,0 +1,15 @@
+FROM bict/human-detect-module-base
+
+WORKDIR /app
+
+# 최소 의존성 설치 (dev 제외)
+COPY pyproject.toml poetry.lock* ./
+RUN poetry config virtualenvs.create false && \
+    poetry install --only main --no-root
+
+# 소스 및 모델만 복사
+COPY ./src ./src_app
+COPY ./yolo12n.pt ./yolo12n.pt
+
+EXPOSE 8000
+CMD ["uvicorn", "src_app.human_detect_module.main:app", "--host", "0.0.0.0", "--port", "8000"]

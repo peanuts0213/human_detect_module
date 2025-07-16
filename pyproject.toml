@@ -1,0 +1,72 @@
+[project]
+name = "human-detect-module"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "tttaliesin",email = "tttaliesin@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "fastapi (>=0.115.8,<0.116.0)",
+    "uvicorn (>=0.34.0,<0.35.0)",
+    "pydantic (>=2.10.6,<3.0.0)",
+    "dependency-injector (>=4.46.0,<5.0.0)",
+    "opencv-contrib-python (>=4.11.0.86,<5.0.0.0)",
+    "ultralytics (>=8.3.84,<9.0.0)",
+    "ray (>=2.43.0,<3.0.0)",
+
+    "torch (>=2.6.0,<3.0.0)",
+    "torchvision (>=0.21.0,<0.22.0)",
+    "lap (>=0.5.12)",
+    "python-dotenv (>=1.0.1,<2.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "aiokafka[lz4] (>=0.12.0,<0.13.0)",
+    "lock (>=2018.3.25.2110,<2019.0.0.0)",
+
+    "pygobject(==3.50.0)",
+
+    "python-socketio[asgi] (>=5.12.1,<6.0.0)",
+
+    "lz4 (>=4.4.3,<5.0.0)",
+
+    "aiohttp (>=3.11.14,<4.0.0)",
+
+    "aiortc (>=1.5.0,<2.0.0)",
+
+    "websockets (>=15.0.1,<16.0.0)",
+
+    "av (>=14.3.0,<15.0.0)",
+]
+
+[tool.poetry]
+packages = [{include = "human_detect_module", from = "src"}]
+
+[[tool.poetry.source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu118"
+priority = "explicit"
+
+[tool.poetry.dependencies]
+torch = {source = "pytorch"}
+torchvision = {source = "pytorch"}
+
+[tool.poe.tasks]
+format = "black ."
+lint = "ruff check --fix ."
+dev = "uvicorn src.human_detect_module.main:app"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+ruff = "^0.9.8"
+pre-commit = "^4.1.0"
+poethepoet = "^0.32.2"
+pyright = "^1.1.396"
+pygobject-stubs = "^2.12.0"
+
+[tool.ruff.lint]
+select = ["E", "F", "N"]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
